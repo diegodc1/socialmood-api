@@ -35,5 +35,5 @@ public class Session {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
-    private User usuarioId;
+    private User user;
 }
