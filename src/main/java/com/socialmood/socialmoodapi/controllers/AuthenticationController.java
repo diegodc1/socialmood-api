@@ -4,7 +4,7 @@ import com.socialmood.socialmoodapi.dto.AuthenticationDTO;
 import com.socialmood.socialmoodapi.dto.LoginResponseDTO;
 import com.socialmood.socialmoodapi.dto.RegisterDTO;
 import com.socialmood.socialmoodapi.entitys.User;
-import com.socialmood.socialmoodapi.repositorys.UserRepository;
+import com.socialmood.socialmoodapi.repositorys.IUserRepository;
 import com.socialmood.socialmoodapi.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private UserRepository repository;
+    private IUserRepository repository;
 
     @Autowired
     private TokenService tokenService;

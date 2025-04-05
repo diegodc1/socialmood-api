@@ -15,22 +15,22 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nomeSessao", nullable = false )
+    @Column(name = "nome_sessao", nullable = false )
     private String nome;
 
-    @Column(name = "duracaoSessao", nullable = false)
+    @Column(name = "duracao_sessao", nullable = false)
     private Integer duracao;
 
-    @Column(name = "inicioSessao", nullable = false)
+    @Column(name = "inicio_sessao", nullable = false)
     private LocalDateTime inicio;
 
-    @Column(name = "fimSessao", nullable = false)
+    @Column(name = "fim_sessao", nullable = false)
     private LocalDateTime fim;
 
-    @Column(name = "redeSocial", nullable = false)
+    @Column(name = "rede_social", nullable = false)
     private Long redeSocial;
 
-    @Column(name = "emocaoPred", nullable = false)
+    @Column(name = "emocao_pred", nullable = false)
     private String emocaoPred;
 
     @ManyToOne

@@ -1,6 +1,6 @@
 package com.socialmood.socialmoodapi.security;
 
-import com.socialmood.socialmoodapi.repositorys.UserRepository;
+import com.socialmood.socialmoodapi.repositorys.IUserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     TokenService tokenService;
 
     @Autowired
-    UserRepository userRepository;
+    IUserRepository IUserRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -28,7 +28,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if(token != null){
             var login = tokenService.validateToken(token);
-            UserDetails user = userRepository.findByEmail(login);
+            UserDetails user = IUserRepository.findByEmail(login);
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -2,16 +2,16 @@ package com.socialmood.socialmoodapi.controllers;
 
 import com.socialmood.socialmoodapi.dto.SessionDTO;
 import com.socialmood.socialmoodapi.entitys.Session;
+import com.socialmood.socialmoodapi.services.EmotionDetectedService;
 import com.socialmood.socialmoodapi.services.SessionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
+@Slf4j
 @RestController
 @CrossOrigin
 @RequestMapping ("/sessions")
@@ -19,27 +19,33 @@ public class SessionController {
     @Autowired
     private SessionService sessionService;
 
+    @Autowired
+    EmotionDetectedService emotionDetectedService;
+
 
     @PostMapping("/newSession")
     public ResponseEntity<String> newSession(@RequestBody SessionDTO sessionDTO){
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if(authentication == null || !authentication.isAuthenticated()){
-                return ResponseEntity.status(401).body("usuario não autenticado");
+                return ResponseEntity.status(401).body("Usuário não autenticado");
             }
-            sessionService.saveSession(
+            Session session = sessionService.saveSession(
                     sessionDTO.nomeSessao(),
                     sessionDTO.duracaoSessao(),
                     sessionDTO.inicioSessao(),
                     sessionDTO.fimSessao(),
                     sessionDTO.redeSocial(),
-                    sessionDTO.emocaoPred()
+                    sessionDTO.listEmocoes()
             );
-            return ResponseEntity.ok().body("Criado com sucesso");
+
+            Boolean result = emotionDetectedService.saveEmotions(session, session.getUser(), sessionDTO.listEmocoes());
+            if (result) {
+                return ResponseEntity.ok().body("Criado com sucesso");
+            }
         } catch (Exception e){
-            return ResponseEntity.badRequest().body("Erro ao processar a requisição: " + e.getMessage());
+            log.error("Ocorrou um erro ao salvar a sessão!", e);
         }
+        return ResponseEntity.internalServerError().body("Erro ao processar a requisição!");
     }
-
-
 }

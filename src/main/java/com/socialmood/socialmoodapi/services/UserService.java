@@ -2,18 +2,16 @@ package com.socialmood.socialmoodapi.services;
 
 import com.socialmood.socialmoodapi.dto.UserDetailsResponseDTO;
 import com.socialmood.socialmoodapi.entitys.User;
-import com.socialmood.socialmoodapi.repositorys.UserRepository;
+import com.socialmood.socialmoodapi.repositorys.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
     @Autowired
-    private UserRepository userRepository;
+    private IUserRepository IUserRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -22,11 +20,11 @@ public class UserService {
     }
 
     public User findUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
+        return IUserRepository.findById(userId).orElse(null);
     }
 
     public UserDetailsResponseDTO findUserDetailsById(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
+        User user = IUserRepository.findById(userId).orElse(null);
 
         if (user != null ) {
             return new UserDetailsResponseDTO(
