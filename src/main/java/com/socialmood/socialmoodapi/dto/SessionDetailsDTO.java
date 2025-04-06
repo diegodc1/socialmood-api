@@ -1,17 +1,19 @@
 package com.socialmood.socialmoodapi.dto;
 
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-
-public record SessionDTO(
+public record SessionDetailsDTO(
+        Long sessionId,
         String nomeSessao,
+        String emocaoPred,
         Integer duracaoSessao,
         LocalDateTime inicioSessao,
         LocalDateTime fimSessao,
         Long redeSocial,
-        List<EmotionDTO>
-                listEmocoes, Long userId
-) {}
+        List<EmotionDTO> emotions
+
+
+
+) {
+}

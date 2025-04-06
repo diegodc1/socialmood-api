@@ -3,8 +3,8 @@ package com.socialmood.socialmoodapi.entitys;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -32,6 +32,13 @@ public class Session {
 
     @Column(name = "emocao_pred", nullable = false)
     private String emocaoPred;
+
+    @OneToMany(mappedBy = "sessao", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<EmotionDetected> emotionsDetected;
+
+    public List<EmotionDetected> getEmotionDetecteds() {
+        return emotionsDetected;
+    }
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

@@ -1,6 +1,7 @@
 package com.socialmood.socialmoodapi.controllers;
 
 import com.socialmood.socialmoodapi.dto.SessionDTO;
+import com.socialmood.socialmoodapi.dto.SessionDetailsDTO;
 import com.socialmood.socialmoodapi.entitys.Session;
 import com.socialmood.socialmoodapi.services.EmotionDetectedService;
 import com.socialmood.socialmoodapi.services.SessionService;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -47,5 +50,17 @@ public class SessionController {
             log.error("Ocorrou um erro ao salvar a sessão!", e);
         }
         return ResponseEntity.internalServerError().body("Erro ao processar a requisição!");
+    }
+
+
+    @GetMapping("/details/current")
+    public SessionDetailsDTO getLastSessionDetails() {
+        return sessionService.getLastSessionDetails();
+    }
+
+    @GetMapping("/allSesions")
+    public ResponseEntity<List<SessionDetailsDTO>> getAllSesions(){
+        List<SessionDetailsDTO> sessionDetailsDTOList = sessionService.getAllSessionsDetails();
+        return ResponseEntity.ok(sessionDetailsDTOList);
     }
 }
