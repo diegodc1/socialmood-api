@@ -60,9 +60,9 @@ public class SessionController {
     }
 
     @GetMapping("/allSesions")
-    public ResponseEntity<List<SessionDetailsDTO>> getAllSesions(){
-        List<SessionDetailsDTO> sessionDetailsDTOList = sessionService.getAllSessionsDetails();
-        return ResponseEntity.ok(sessionDetailsDTOList);
+    public ResponseEntity<List<SessionDetailsDTO>> getAllSessionsDetails(){
+        List<SessionDetailsDTO> sessions = sessionService.getAllSessionsDetails();
+        return ResponseEntity.ok(sessions);
     }
 
     @PostMapping("/user/{userId}")

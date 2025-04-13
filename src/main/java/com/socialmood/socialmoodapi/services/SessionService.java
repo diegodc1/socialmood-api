@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -169,39 +170,36 @@ public class SessionService {
     }
     public List<SessionDetailsDTO> getAllSessionsDetails() {
         try {
-
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if (authentication == null || !authentication.isAuthenticated()) {
-                throw new RuntimeException("Acesso não autorizado - nenhum usuário autenticado");
+                throw new RuntimeException("Usuario não autenticado");
             }
 
-            Object principal = authentication.getPrincipal();
-            String emailUser;
-
-            if(principal instanceof UserDetails){
-                emailUser = ((UserDetails) principal).getUsername();
-            }else {
-                emailUser = principal.toString();
+            Object princial = authentication.getPrincipal();
+            String emailUsuario;
+            if (princial instanceof UserDetails) {
+                emailUsuario = ((UserDetails) princial).getUsername();
+            } else {
+                emailUsuario = princial.toString();
             }
-
-            User user = (User) IUserRepository.findByEmail(emailUser);
-            if (user == null) {
-                throw new RuntimeException("Usuário não encontrado");
+            User user = (User) IUserRepository.findByEmail(emailUsuario);
+            if(user  == null){
+                throw new RuntimeException("Usuario não encontrado");
             }
-
             List<Session> sessions = sessionRepository.findByUserOrderByInicioDesc(user);
-
-            return sessions.stream()
-                    .map(this::convertToSessionDetailsDTO)
-                    .collect(Collectors.toList());
-
-        } catch (Exception e) {
-            System.err.println("Erro ao buscar sessões: " + e.getMessage());
-            throw new RuntimeException("Falha ao processar requisição: " + e.getMessage());
+            Set<String> allEmotions = new HashSet<>();
+            sessions.forEach(session -> {
+                if (session.getEmotionsDetected() != null){
+                    session.getEmotionsDetected().forEach(emotionDetected ->{
+                        allEmotions.add(emotionDetected.getDataDeteccao().toString());
+                    });
+                }
+            });
+            return  sessions.stream().map(this::convertToSessionDetailsDTO).collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Falha na Requisição");
         }
     }
-
     public List<SessionFormatDTO> getListByUserId(Long userId) {
         try {
             User user = IUserRepository.findById(userId).orElse(null);
