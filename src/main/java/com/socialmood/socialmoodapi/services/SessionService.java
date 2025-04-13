@@ -2,10 +2,12 @@ package com.socialmood.socialmoodapi.services;
 
 import com.socialmood.socialmoodapi.dto.EmotionDTO;
 import com.socialmood.socialmoodapi.dto.SessionDetailsDTO;
+import com.socialmood.socialmoodapi.dto.SessionFormatDTO;
 import com.socialmood.socialmoodapi.entitys.Session;
 import com.socialmood.socialmoodapi.entitys.User;
 import com.socialmood.socialmoodapi.repositorys.ISessionRepository;
 import com.socialmood.socialmoodapi.repositorys.IUserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class SessionService {
     @Autowired
@@ -126,15 +129,15 @@ public class SessionService {
             });
         }
 
-            SessionDetailsDTO detailsDTO = new SessionDetailsDTO(
-                    session.getId(),
-                    session.getNome(),
-                    session.getEmocaoPred(),
-                    session.getDuracao(),
-                    session.getInicio(),
-                    session.getFim(),
-                    session.getRedeSocial(),
-                    listEmocoes    );
+        SessionDetailsDTO detailsDTO = new SessionDetailsDTO(
+                session.getId(),
+                session.getNome(),
+                session.getEmocaoPred(),
+                session.getDuracao(),
+                session.getInicio(),
+                session.getFim(),
+                session.getRedeSocial(),
+                listEmocoes    );
 
         return detailsDTO;
   }
@@ -197,6 +200,21 @@ public class SessionService {
             System.err.println("Erro ao buscar sessões: " + e.getMessage());
             throw new RuntimeException("Falha ao processar requisição: " + e.getMessage());
         }
+    }
+
+    public List<SessionFormatDTO> getListByUserId(Long userId) {
+        try {
+            User user = IUserRepository.findById(userId).orElse(null);
+            if (user != null) {
+                List<Session> listSessions = sessionRepository.findByUser(user);
+                return listSessions.stream()
+                        .map(SessionFormatDTO::new)
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            log.error("Não foi possível realizar a busca das sessões do usuario: ", e);
+        }
+        return null;
     }
 
 }
