@@ -1,5 +1,6 @@
 package com.socialmood.socialmoodapi.services;
 
+import com.socialmood.socialmoodapi.dto.UpdatePasswordDTO;
 import com.socialmood.socialmoodapi.dto.UserDetailsResponseDTO;
 import com.socialmood.socialmoodapi.entitys.User;
 import com.socialmood.socialmoodapi.repositorys.IUserRepository;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -74,5 +77,32 @@ public class UserService {
             log.error("Ocorreu um erro ao atualizar o email do usuário: " + userId, e);
         }
         return false;
+    }
+
+    public String updateUserPassword(UpdatePasswordDTO passwordDTO) {
+        try {
+            Optional<User> optionalUser = IUserRepository.findById(passwordDTO.userId());
+            if (optionalUser.isEmpty()) {
+                log.warn("Usuário não encontrado: " + passwordDTO.userId());
+                return "404";
+            }
+
+            User user = optionalUser.get();
+
+
+            if (!passwordEncoder.matches(passwordDTO.currentPassword(), user.getPassword())) {
+                log.warn("Senha atual incorreta para usuário: " + passwordDTO.userId());
+                return "401";
+            }
+
+            user.setSenha(passwordEncoder.encode(passwordDTO.newPassword()));
+            IUserRepository.save(user);
+
+            return "200";
+
+        } catch (Exception e) {
+            log.error("Erro ao atualizar senha: ", e);
+            return "500";
+        }
     }
 }
