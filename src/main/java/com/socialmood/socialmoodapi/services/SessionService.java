@@ -215,4 +215,19 @@ public class SessionService {
         return null;
     }
 
+    public SessionFormatDTO getSessionById(Long sessionId) {
+        try {
+            if (sessionId != null) {
+                Session session = sessionRepository.findById(sessionId).orElse(null);
+
+                if (session != null) {
+                    return new SessionFormatDTO(session);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Não foi possível realizar a busca da sessão: ", e);
+        }
+        return null;
+    }
+
 }

@@ -65,6 +65,12 @@ public class SessionController {
         return ResponseEntity.ok(sessions);
     }
 
+    @PostMapping("/session/{sessionId}")
+    public ResponseEntity<SessionFormatDTO> getSessionById(@PathVariable Long sessionId){
+        SessionFormatDTO session = sessionService.getSessionById(sessionId);
+        return ResponseEntity.ok(session);
+    }
+
     @PostMapping("/user/{userId}")
     public ResponseEntity<List<SessionFormatDTO>> getAllSessionsByUserId(@PathVariable Long userId){
         List<SessionFormatDTO> sessionList = sessionService.getListByUserId(userId);
