@@ -1,11 +1,9 @@
 package com.socialmood.socialmoodapi.dto;
 
-import com.socialmood.socialmoodapi.entitys.Session;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record SessionDetailsDTO(
+public record SessionDetailsReportDTO(
         Long sessionId,
         String nomeSessao,
         String emocaoPred,
@@ -13,7 +11,9 @@ public record SessionDetailsDTO(
         LocalDateTime inicioSessao,
         LocalDateTime fimSessao,
         Long redeSocial,
-        List<EmotionDTO> emotions
-
+        List<EmotionDTO> emotions,
+        String name,
+        String sobrenome,
+        String email
 ) {
 }

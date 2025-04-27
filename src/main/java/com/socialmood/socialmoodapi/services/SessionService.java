@@ -2,6 +2,7 @@ package com.socialmood.socialmoodapi.services;
 
 import com.socialmood.socialmoodapi.dto.EmotionDTO;
 import com.socialmood.socialmoodapi.dto.SessionDetailsDTO;
+import com.socialmood.socialmoodapi.dto.SessionDetailsReportDTO;
 import com.socialmood.socialmoodapi.dto.SessionFormatDTO;
 import com.socialmood.socialmoodapi.entitys.Session;
 import com.socialmood.socialmoodapi.entitys.User;
@@ -27,6 +28,8 @@ public class SessionService {
     private ISessionRepository sessionRepository;
     @Autowired
     private IUserRepository IUserRepository;
+    @Autowired
+    private UserService userService;
 
     public Session saveSession(String nomeSession, Integer duracaoSessao, LocalDateTime inicioSessao,
                                LocalDateTime fimSessao, Long redeSocial,  List<EmotionDTO> listEmocoes) {
@@ -156,6 +159,7 @@ public class SessionService {
                 .stream()
                 .map(e -> new EmotionDTO(e.getEmocao().toString(), e.getDataDeteccao().toInstant()))
                 .collect(Collectors.toList());
+                User user = session.getUser();
 
         return new SessionDetailsDTO(
                 session.getId(),
@@ -166,6 +170,7 @@ public class SessionService {
                 session.getFim(),
                 session.getRedeSocial(),
                 emotions
+
         );
     }
     public List<SessionDetailsDTO> getAllSessionsDetails() {
@@ -200,6 +205,8 @@ public class SessionService {
             throw new RuntimeException("Falha na Requisição");
         }
     }
+
+
     public List<SessionFormatDTO> getListByUserId(Long userId) {
         try {
             User user = IUserRepository.findById(userId).orElse(null);
@@ -228,6 +235,63 @@ public class SessionService {
             log.error("Não foi possível realizar a busca da sessão: ", e);
         }
         return null;
+    }
+
+    private SessionDetailsReportDTO convertToSessionDetailsDTO_Report(Session session) {
+        List<EmotionDTO> emotions = Optional.ofNullable(session.getEmotionsDetected())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(e -> new EmotionDTO(e.getEmocao().toString(), e.getDataDeteccao().toInstant()))
+                .collect(Collectors.toList());
+        User user = session.getUser();
+
+        return new SessionDetailsReportDTO(
+                session.getId(),
+                session.getNome(),
+                session.getEmocaoPred(),
+                session.getDuracao(),
+                session.getInicio(),
+                session.getFim(),
+                session.getRedeSocial(),
+                emotions,
+                user.getNome(),
+                user.getSobrenome(),
+                user.getEmail()
+
+
+        );
+    }
+    public List<SessionDetailsReportDTO> getAllSessionsDetailsWithUser() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                throw new RuntimeException("Usuario não autenticado");
+            }
+
+            Object princial = authentication.getPrincipal();
+            String emailUsuario;
+            if (princial instanceof UserDetails) {
+                emailUsuario = ((UserDetails) princial).getUsername();
+            } else {
+                emailUsuario = princial.toString();
+            }
+            User user = (User) IUserRepository.findByEmail(emailUsuario);
+            if(user  == null){
+                throw new RuntimeException("Usuario não encontrado");
+            }
+            List<Session> sessions = sessionRepository.findByUserOrderByInicioDesc(user);
+            Set<String> allEmotions = new HashSet<>();
+            sessions.forEach(session -> {
+                if (session.getEmotionsDetected() != null){
+                    session.getEmotionsDetected().forEach(emotionDetected ->{
+                        allEmotions.add(emotionDetected.getDataDeteccao().toString());
+                    });
+                }
+            });
+            return  sessions.stream().map(this::convertToSessionDetailsDTO_Report).collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Falha na Requisição");
+        }
     }
 
 }

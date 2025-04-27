@@ -2,6 +2,7 @@ package com.socialmood.socialmoodapi.controllers;
 
 import com.socialmood.socialmoodapi.dto.SessionDTO;
 import com.socialmood.socialmoodapi.dto.SessionDetailsDTO;
+import com.socialmood.socialmoodapi.dto.SessionDetailsReportDTO;
 import com.socialmood.socialmoodapi.dto.SessionFormatDTO;
 import com.socialmood.socialmoodapi.entitys.Session;
 import com.socialmood.socialmoodapi.services.EmotionDetectedService;
@@ -60,8 +61,8 @@ public class SessionController {
     }
 
     @GetMapping("/allSesions")
-    public ResponseEntity<List<SessionDetailsDTO>> getAllSessionsDetails(){
-        List<SessionDetailsDTO> sessions = sessionService.getAllSessionsDetails();
+    public ResponseEntity<List<SessionDetailsReportDTO>> getAllSessionsDetails(){
+        List<SessionDetailsReportDTO> sessions = sessionService.getAllSessionsDetailsWithUser();
         return ResponseEntity.ok(sessions);
     }
 
