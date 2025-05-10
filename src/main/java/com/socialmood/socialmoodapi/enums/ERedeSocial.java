@@ -9,7 +9,7 @@ public enum ERedeSocial {
     TIKTOK(1, "TikTok"),
     REDDIT(2, "Reddit"),
     FACEBOOK(3, "Facebook"),
-    XTWITTER(4, "X-Twitter"),
+    XTWITTER(4, "X"),
     INSTAGRAM(5, "Instagram"),
     THREADS(6, "Threads");
 
@@ -29,5 +29,14 @@ public enum ERedeSocial {
             }
         }
         throw new IllegalArgumentException("Rede Social inválida: " + socialCod);
+    }
+
+    public static ERedeSocial getSocialIdByName(String socialName) {
+        for (ERedeSocial e : ERedeSocial.values()) {
+            if (socialName != null && socialName.equalsIgnoreCase(e.name)) {
+                return e;
+            }
+        }
+        throw new IllegalArgumentException("Rede Social inválida: " + socialName);
     }
 }

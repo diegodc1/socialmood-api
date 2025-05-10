@@ -1,13 +1,13 @@
 package com.socialmood.socialmoodapi.services;
 
-import com.socialmood.socialmoodapi.dto.EmotionDTO;
-import com.socialmood.socialmoodapi.dto.SessionDetailsDTO;
-import com.socialmood.socialmoodapi.dto.SessionDetailsReportDTO;
-import com.socialmood.socialmoodapi.dto.SessionFormatDTO;
+import com.socialmood.socialmoodapi.dto.*;
 import com.socialmood.socialmoodapi.entitys.Session;
 import com.socialmood.socialmoodapi.entitys.User;
+import com.socialmood.socialmoodapi.enums.ERedeSocial;
+import com.socialmood.socialmoodapi.enums.Emotion;
 import com.socialmood.socialmoodapi.repositorys.ISessionRepository;
 import com.socialmood.socialmoodapi.repositorys.IUserRepository;
+import com.socialmood.socialmoodapi.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -294,4 +295,27 @@ public class SessionService {
         }
     }
 
+    public List<SessionFormatDTO> getListByFilters(ReportBodyRequestDTO filters) {
+        try {
+            if (filters != null) {
+                Emotion emotion = Emotion.fromPortuguese(filters.emotion());
+                ERedeSocial redeSocial = ERedeSocial.getSocialIdByName(filters.socialMedia());
+
+                LocalDate inicioSessao = null;
+                if (filters.dateInic() != null) {
+                    inicioSessao = DateUtils.convertToLocalDate((filters.dateInic()));
+                }
+
+                List<Session> listSessions = sessionRepository.buscarPorFiltros(filters.userId(), emotion.name(), redeSocial.getName(), inicioSessao);
+
+
+                return listSessions.stream()
+                        .map(SessionFormatDTO::new)
+                        .collect(Collectors.toList());
+            }
+        } catch (Exception e) {
+            log.error("Não foi possível realizar a busca das sessões do usuario: ", e);
+        }
+        return null;
+    }
 }

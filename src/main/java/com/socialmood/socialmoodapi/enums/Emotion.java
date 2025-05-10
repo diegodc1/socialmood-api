@@ -24,4 +24,22 @@ public enum Emotion {
         }
         throw new IllegalArgumentException("Emoção inválida: " + emotion);
     }
+
+    public static Emotion fromPortuguese(String emotionPt) {
+        if (emotionPt == null) {
+            throw new IllegalArgumentException("Emoção não pode ser nula");
+        }
+
+        switch (emotionPt.trim().toLowerCase()) {
+            case "alegria": return HAPPY;
+            case "tristeza": return SAD;
+            case "raiva": return ANGRY;
+            case "neutro": return NEUTRAL;
+            case "supresa": return SURPRISE;
+            case "medo": return FEAR;
+            default:
+                throw new IllegalArgumentException("Emoção inválida: " + emotionPt);
+        }
+    }
+
 }
