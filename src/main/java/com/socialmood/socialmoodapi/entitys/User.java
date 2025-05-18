@@ -10,12 +10,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Getter
 @Entity(name = "users")
 @Table(name = "users")
+@AllArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,6 +49,9 @@ public class User implements UserDetails {
     @Column(name = "user_role", nullable = false)
     private UserRole role;
 
+    @Column(name = "user_birth")
+    private Date dataNascimento;
+
     public User() {
     }
 
@@ -69,13 +74,14 @@ public class User implements UserDetails {
         this.role = role;
     }
 
-    public User(String nome, String sobrenome, String email, String encryptedPassword, String telefone, String genero, UserRole role) {
+    public User(String nome, String sobrenome, String email, String encryptedPassword, String telefone, String genero, Date dataNascimento, UserRole role) {
         this.nome = nome;
         this.sobrenome = sobrenome;
         this.email = email;
         this.senha = encryptedPassword;
         this.telefone = telefone;
         this.genero = genero;
+        this.dataNascimento = dataNascimento;
         this.role = role;
     }
 

@@ -40,7 +40,8 @@ public class UserService {
                     user.getRole(),
                     user.getFotoPerfil(),
                     user.getTelefone(),
-                    user.getGenero()
+                    user.getGenero(),
+                    user.getDataNascimento()
             );
         } else {
             return null;
